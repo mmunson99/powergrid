@@ -194,9 +194,5 @@ export const map: GameMap = {
         ],
     ],
     mapSpecificRules:
-        'Phase order change: buy power plants first, then determine player order. ' +
-        'If no power plant is sold in a round, remove the two lowest-numbered plants from the market and replace them from the draw stack. ' +
-        'Never remove a power plant whose number is equal to or lower than the number of cities any player has powered. ' +
-        'Transregional cities (e.g. Strasbourg) are only available starting in Step 2. ' +
-        'Step 2 begins when any player connects to 9 cities (2 players), 6 cities (3–5 players), or 5 cities (6 players).',
+        'Player order is recalculated AFTER the auction phase, not before it. In round 1, player order is set randomly.\nIf every player passes during the auction, the two lowest-numbered power plants are removed from the market (instead of one).\nThe smallest power plant is never removed from the market at the end of round 1.\nStep 2 begins earlier than usual: at 9 cities (2 players), 6 cities (3-5 players), or 5 cities (6 players).\nFive border cities (Strasbourg, Augsburg, Basel, Ludwigshafen, Nürnberg) are transregional. They cannot be built in Step 1. In Step 2 they cost a flat 15 Elektro to connect; in Step 3 a flat 20 Elektro. The connection (path) cost from your network is paid on top.\nIn the Recharged variant, the discount-token mechanic is not used on this map.',
 };

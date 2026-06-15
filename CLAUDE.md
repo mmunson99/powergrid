@@ -29,6 +29,16 @@ If a change you already made upstream got merged (check `git log HEAD..origin/ma
 don't re-include it — start clean from the merged master instead of rebasing a
 tangled local history.
 
+## Opening the PR requires being signed in to GitHub
+
+On the compare page
+(`github.com/boardgamers/powergrid/compare/master...mmunson99:powergrid:<branch>`),
+the green **Create pull request** button is **hidden when logged out**. The
+tell-tale sign is the top-right corner showing **Sign in / Sign up** instead of
+your avatar — the "Able to merge" banner and the diff still render, so it's easy
+to miss. Sign in to the `mmunson99` account, reload the compare URL, and the
+button appears next to the "Able to merge" row.
+
 ## The Prettier / ESLint single-quote deadlock
 
 ESLint is configured with `quotes: ['error', 'single']` (see

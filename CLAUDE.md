@@ -86,3 +86,56 @@ ESLint **warnings** (e.g. pre-existing `no-explicit-any` /
 `explicit-module-boundary-types` in `engine.ts`, `wrapper.ts`, `*.spec.ts`) do
 not fail CI — only **errors** do. Don't be alarmed by the warning list; check
 the exit code / error count.
+
+## New-game options live on the boardgamers.space platform, not in this repo
+
+The "other options" checkboxes on the new-game page (fast bid, show money, …) are
+**not** defined in this repo. They come from the powergrid **GameInfo** stored on
+the boardgamers.space platform (admin panel / game settings document). The flow:
+
+```
+new-game page  ──reads──▶  GameInfo.options  (platform config)
+   renders one control per option entry
+        │ user ticks the box
+        ▼
+   options = { ..., <name>: true }
+        │
+        ▼
+   engine wrapper.init(nbPlayers, expansions, options, seed)
+        ▼
+   engine setup(nbPlayers, options, seed)   ← reads options[<name>]
+```
+
+So a feature like a new option is **two parts**: (1) the engine/viewer support it
+(this repo), and (2) a GameInfo `options` entry is added on the platform so the
+checkbox renders and the flag is sent. We can only do part 1 here.
+
+To add an option entry, mirror the existing `fastBid` entry in the same
+`options` array:
+
+```js
+{
+  name: 'chooseRegions',   // MUST equal the engine GameOptions key
+  label: 'Choose regions',
+  type: 'checkbox',
+  default: false,
+}
+```
+
+The `name` must match the engine `GameOptions` key exactly, or the flag never
+reaches `setup()`. Also: persist the option in the `setup()` `options` literal in
+`engine.ts` (it currently lists specific keys, not `...options`) — otherwise
+`wrapper.replay()` (which re-runs `setup(players, G.options, seed)`) loses it and
+replays/reconstructs the game wrong. `randomizeMap` is the cautionary example: it
+is NOT in that literal, so it does not survive replay.
+
+### Deploy ordering for a new option
+
+1. Merge the engine/viewer PR.
+2. Publish new `powergrid-engine` + `powergrid-viewer` versions (the `🔖`
+   version-bump commits are how releases land).
+3. Point the platform's powergrid GameInfo at those versions.
+4. Add the GameInfo `options` entry (step above).
+
+Adding the checkbox before the supporting versions are deployed shows the box but
+does nothing — an old engine silently ignores an unknown flag.
